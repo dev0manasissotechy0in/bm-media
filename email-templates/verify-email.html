@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .email-header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        .email-body {
+            padding: 40px 30px;
+            color: #333333;
+            line-height: 1.8;
+        }
+        .email-body h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin: 0 0 20px 0;
+        }
+        .email-body p {
+            font-size: 16px;
+            margin: 0 0 20px 0;
+            color: #555555;
+        }
+        .verify-button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .verify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+        }
+        .alternative-link {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .alternative-link p {
+            font-size: 14px;
+            color: #666666;
+            margin: 0 0 10px 0;
+        }
+        .alternative-link a {
+            color: #667eea;
+            word-break: break-all;
+            font-size: 13px;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #888888;
+            font-size: 14px;
+        }
+        .email-footer p {
+            margin: 5px 0;
+        }
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .security-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .security-note p {
+            margin: 0;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <div class="icon">✉️</div>
+            <h1>Verify Your Email Address</h1>
+            <p>Welcome to Bracodd Media!</p>
+        </div>
+        
+        <div class="email-body">
+            <h2>Hello {{USER_NAME}}! 👋</h2>
+            
+            <p>Thank you for registering with <strong>Bracodd Media</strong>. We're excited to have you on board!</p>
+            
+            <p>To complete your registration and start exploring our content, please verify your email address by clicking the button below:</p>
+            
+            <div class="button-container">
+                <a href="{{VERIFICATION_LINK}}" class="verify-button">
+                    ✓ Verify My Email
+                </a>
+            </div>
+            
+            <div class="security-note">
+                <p><strong>⏰ Important:</strong> This verification link will expire in 24 hours for your security.</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="alternative-link">
+                <p><strong>Button not working?</strong> Copy and paste this link into your browser:</p>
+                <a href="{{VERIFICATION_LINK}}">{{VERIFICATION_LINK}}</a>
+            </div>
+            
+            <p style="margin-top: 30px;">Once verified, you'll be able to:</p>
+            <ul style="color: #555; line-height: 2;">
+                <li>📰 Read unlimited articles and news</li>
+                <li>🎙️ Listen to podcasts and save favorites</li>
+                <li>💬 Comment and interact with content</li>
+                <li>🔔 Get personalized notifications</li>
+                <li>⭐ Save articles for later</li>
+            </ul>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #888;">
+                If you didn't create this account, please ignore this email or contact our support team.
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p><strong>Bracodd Media</strong></p>
+            <p>Your Trusted News Source</p>
+            <p style="margin-top: 15px;">
+                <a href="http://brackoddmedia.com">Visit Website</a> | 
+                <a href="http://brackoddmedia.com/contact.php">Contact Support</a>
+            </p>
+            <p style="margin-top: 15px; font-size: 12px; color: #aaa;">
+                © 2025 Bracodd Media. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

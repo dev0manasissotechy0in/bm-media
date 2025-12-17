@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Podcast Notifications API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: white;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 300px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎙️ Podcast Notifications API Test</h1>
+
+    <!-- Login Section -->
+    <div class="section">
+        <h2>1. Login</h2>
+        <input type="text" id="loginEmail" placeholder="Email or Phone" value="test@example.com">
+        <input type="password" id="loginPassword" placeholder="Password" value="password123">
+        <button onclick="testLogin()">Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <!-- Get Notifications List -->
+    <div class="section">
+        <h2>2. Get Notifications List</h2>
+        <p>Get all podcasts with notification status</p>
+        <button onclick="getNotificationsList()">Get List</button>
+        <div id="listResult" class="result"></div>
+    </div>
+
+    <!-- Toggle Notification -->
+    <div class="section">
+        <h2>3. Toggle Notification</h2>
+        <input type="number" id="podcastId" placeholder="Podcast ID" value="2">
+        <label>
+            <input type="checkbox" id="enableNotif" checked> Enable Notification
+        </label>
+        <button onclick="toggleNotification()">Toggle</button>
+        <div id="toggleResult" class="result"></div>
+    </div>
+
+    <!-- Test Without Login -->
+    <div class="section">
+        <h2>4. Test Authentication Error</h2>
+        <p>This should fail with "Please login" message</p>
+        <button onclick="testNoAuth()">Test Without Token</button>
+        <div id="noAuthResult" class="result"></div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/auth/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        identifier: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.token;
+                    resultDiv.innerHTML = `<span class="success">✅ Login Success!</span>\n\n${JSON.stringify(data, null, 2)}`;
+                    alert('Token saved! You can now test other endpoints.');
+                } else {
+                    resultDiv.innerHTML = `<span class="error">❌ Login Failed</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function getNotificationsList() {
+            const resultDiv = document.getElementById('listResult');
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">❌ Please login first!</span>';
+                return;
+            }
+            
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/podcasts/notifications-list.php', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `<span class="success">✅ Success!</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">❌ Failed</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function toggleNotification() {
+            const resultDiv = document.getElementById('toggleResult');
+            const podcastId = parseInt(document.getElementById('podcastId').value);
+            const enabled = document.getElementById('enableNotif').checked;
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">❌ Please login first!</span>';
+                return;
+            }
+            
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/podcasts/notification.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({
+                        podcast_id: podcastId,
+                        enabled: enabled
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `<span class="success">✅ Success!</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">❌ Failed</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function testNoAuth() {
+            const resultDiv = document.getElementById('noAuthResult');
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/podcasts/notification.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        podcast_id: 1,
+                        enabled: true
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `<span class="error">Expected Error:</span>\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .box { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { background: #d1fae5; border: 2px solid #10b981; }
+        .error { background: #fee2e2; border: 2px solid #ef4444; }
+        button { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        pre { white-space: pre-wrap; word-wrap: break-word; background: #f5f5f5; padding: 10px; border-radius: 4px; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Verify OTP Test</h1>
+    
+    <div class="box">
+        <h3>Enter Details</h3>
+        <input type="email" id="email" placeholder="Email" value="manas8teen@gmail.com">
+        <input type="text" id="otp" placeholder="OTP Code" value="611978">
+        <button onclick="verifyOTP()">Verify OTP & Login</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const API = window.location.origin;
+
+        async function verifyOTP() {
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+            
+            if (!email || !otp) {
+                resultDiv.innerHTML = '<div class="box error">Please enter both email and OTP</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="box">Verifying OTP...</div>';
+            
+            try {
+                const response = await fetch(`${API}/api/auth/verify-otp.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="box success">
+                            <h2>✅ Login Successful!</h2>
+                            <p><strong>User:</strong> ${data.user.full_name}</p>
+                            <p><strong>Email:</strong> ${data.user.email}</p>
+                            <p><strong>User Type:</strong> ${data.user.user_type}</p>
+                            <p><strong>Token:</strong> ${data.token}</p>
+                            <details>
+                                <summary>Full Response</summary>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="box error">
+                            <h3>❌ Verification Failed</h3>
+                            <p><strong>Error:</strong> ${data.message}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="box error">
+                        <strong>ERROR:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

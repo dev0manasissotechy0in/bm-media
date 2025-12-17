@@ -1,0 +1,60 @@
+# Robots.txt for News Website
+# Allow all search engines to index the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin area
+Disallow: /admin/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /vendor/
+
+# Disallow API endpoints (optional - remove if you want APIs indexed)
+# Disallow: /api/
+
+# Disallow login/logout pages
+Disallow: /login.php
+Disallow: /logout.php
+Disallow: /register.php
+
+# Disallow search results
+Disallow: /search.php?
+
+# Disallow newsletter pages
+Disallow: /newsletter_verify.php
+Disallow: /newsletter_unsubscribe.php
+
+# Disallow upload directory
+Disallow: /uploads/
+
+# Allow specific important files
+Allow: /sitemap.xml.php
+Allow: /robots.txt
+
+# Sitemap location
+Sitemap: http://localhost/sitemap.xml.php
+
+# Crawl-delay for bots (adjust as needed)
+# Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block bad bots (uncomment if needed)
+# User-agent: MJ12bot
+# Disallow: /
+
+# User-agent: AhrefsBot
+# Disallow: /
+
+# User-agent: SemrushBot
+# Disallow: /

@@ -1,0 +1,9 @@
+# Prevent PHP execution in uploads directory
+<Files *.php>
+    deny from all
+</Files>
+
+# Allow images and other media
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|mp4|avi|mov|pdf|doc|docx)$">
+    Allow from all
+</FilesMatch>

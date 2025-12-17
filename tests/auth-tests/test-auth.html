@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth System Tester</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+        }
+        .test-section h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+        .result.error {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .info {
+            background: #dbeafe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2563eb;
+        }
+        .info strong {
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Auth System Tester</h1>
+            <p>Test all authentication endpoints</p>
+        </div>
+        
+        <div class="content">
+            <div class="info">
+                <strong>ℹ️ Instructions:</strong> Test each endpoint to verify the auth system is working correctly.
+            </div>
+
+            <!-- Test 1: Send OTP -->
+            <div class="test-section">
+                <h3>1️⃣ Send OTP (Email Login)</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="otp_email" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="otp_name" placeholder="Test User" value="Test User">
+                </div>
+                <button class="btn" onclick="sendOTP()">Send OTP</button>
+                <div id="otp_result"></div>
+            </div>
+
+            <!-- Test 2: Verify OTP -->
+            <div class="test-section">
+                <h3>2️⃣ Verify OTP</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="verify_email" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label>OTP Code:</label>
+                    <input type="text" id="verify_otp" placeholder="123456" maxlength="6">
+                </div>
+                <button class="btn" onclick="verifyOTP()">Verify OTP</button>
+                <div id="verify_result"></div>
+            </div>
+
+            <!-- Test 3: Password Login -->
+            <div class="test-section">
+                <h3>3️⃣ Password Login</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="login_email" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="login_password" placeholder="password" value="password">
+                </div>
+                <button class="btn" onclick="passwordLogin()">Login</button>
+                <div id="login_result"></div>
+            </div>
+
+            <!-- Test 4: Forgot Password -->
+            <div class="test-section">
+                <h3>4️⃣ Forgot Password</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="forgot_email" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <button class="btn" onclick="forgotPassword()">Send Reset Code</button>
+                <div id="forgot_result"></div>
+            </div>
+
+            <!-- Test 5: Reset Password -->
+            <div class="test-section">
+                <h3>5️⃣ Reset Password</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="reset_email" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label>OTP Code:</label>
+                    <input type="text" id="reset_otp" placeholder="123456" maxlength="6">
+                </div>
+                <div class="form-group">
+                    <label>New Password:</label>
+                    <input type="password" id="reset_password" placeholder="newpassword123">
+                </div>
+                <button class="btn" onclick="resetPassword()">Reset Password</button>
+                <div id="reset_result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+
+        async function sendOTP() {
+            const email = document.getElementById('otp_email').value;
+            const name = document.getElementById('otp_name').value;
+            const resultDiv = document.getElementById('otp_result');
+            
+            resultDiv.innerHTML = '<div class="loading"></div> Sending OTP...';
+            
+            try {
+                console.log('Sending OTP request to:', `${API_URL}/api/auth/send-otp.php`);
+                console.log('Request body:', { email, name, user_type: 'user' });
+                
+                const response = await fetch(`${API_URL}/api/auth/send-otp.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name, user_type: 'user' })
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    data = { 
+                        success: false, 
+                        error: 'Invalid JSON response', 
+                        raw_response: text.substring(0, 500) 
+                    };
+                }
+                
+                showResult(resultDiv, data, response.ok);
+            } catch (error) {
+                console.error('Error:', error);
+                showResult(resultDiv, { 
+                    error: error.message,
+                    details: 'Check browser console for more details',
+                    tip: 'Make sure XAMPP is running and the URL is correct'
+                }, false);
+            }
+        }
+
+        async function verifyOTP() {
+            const email = document.getElementById('verify_email').value;
+            const otp = document.getElementById('verify_otp').value;
+            const resultDiv = document.getElementById('verify_result');
+            
+            resultDiv.innerHTML = '<div class="loading"></div> Verifying OTP...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/verify-otp.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp, user_type: 'user' })
+                });
+                
+                const data = await response.json();
+                showResult(resultDiv, data, response.ok);
+            } catch (error) {
+                showResult(resultDiv, { error: error.message }, false);
+            }
+        }
+
+        async function passwordLogin() {
+            const email = document.getElementById('login_email').value;
+            const password = document.getElementById('login_password').value;
+            const resultDiv = document.getElementById('login_result');
+            
+            resultDiv.innerHTML = '<div class="loading"></div> Logging in...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                showResult(resultDiv, data, response.ok);
+            } catch (error) {
+                showResult(resultDiv, { error: error.message }, false);
+            }
+        }
+
+        async function forgotPassword() {
+            const email = document.getElementById('forgot_email').value;
+            const resultDiv = document.getElementById('forgot_result');
+            
+            resultDiv.innerHTML = '<div class="loading"></div> Sending reset code...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/forgot-password.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                showResult(resultDiv, data, response.ok);
+            } catch (error) {
+                showResult(resultDiv, { error: error.message }, false);
+            }
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('reset_email').value;
+            const otp = document.getElementById('reset_otp').value;
+            const new_password = document.getElementById('reset_password').value;
+            const resultDiv = document.getElementById('reset_result');
+            
+            resultDiv.innerHTML = '<div class="loading"></div> Resetting password...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/reset-password.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp, new_password })
+                });
+                
+                const data = await response.json();
+                showResult(resultDiv, data, response.ok);
+            } catch (error) {
+                showResult(resultDiv, { error: error.message }, false);
+            }
+        }
+
+        function showResult(div, data, success) {
+            const className = success ? 'success' : 'error';
+            let formatted = JSON.stringify(data, null, 2);
+            
+            // Highlight debug OTP if present
+            if (data.debug && data.debug.otp) {
+                const otpMatch = formatted.match(/"otp": "(\d{6})"/);
+                if (otpMatch) {
+                    formatted = formatted.replace(
+                        otpMatch[0], 
+                        `"otp": "<strong style='color: #dc2626; font-size: 18px;'>${otpMatch[1]}</strong>"`
+                    );
+                }
+            }
+            
+            div.innerHTML = `<div class="result ${className}">${formatted}</div>`;
+        }
+    </script>
+</body>
+</html>

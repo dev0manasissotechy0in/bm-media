@@ -1,0 +1,213 @@
+# Apache Configuration for News Website
+# Enable URL rewriting and security features
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Force HTTPS (uncomment for production)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Remove www (or force www - choose one)
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+    
+    # Clean URL for articles
+    RewriteRule ^article/([a-zA-Z0-9-]+)$ article.php?slug=$1 [L,QSA]
+    
+    # Clean URL for podcasts
+    RewriteRule ^podcast/([a-zA-Z0-9-]+)$ podcast.php?slug=$1 [L,QSA]
+    
+    # Clean URL for case threads
+    RewriteRule ^case/([a-zA-Z0-9-]+)$ case.php?slug=$1 [L,QSA]
+    
+    # Clean URL for case articles
+    RewriteRule ^cases/([a-zA-Z0-9-]+)/articles$ case-articles.php?slug=$1 [L,QSA]
+    
+    # Clean URL for reels with slug - reel/slug/id
+    RewriteRule ^reel/([a-zA-Z0-9-]+)/([0-9]+)/?$ reel-player.php?slug=$1&article_id=$2 [L,QSA]
+    
+    # Clean URLs for specific pages (remove .php extension)
+    RewriteRule ^stories/?$ stories.php [L,QSA]
+    RewriteRule ^reels/?$ reels.php [L,QSA]
+    RewriteRule ^podcasts/?$ podcasts.php [L,QSA]
+    RewriteRule ^case-threads/?$ case-threads.php [L,QSA]
+    RewriteRule ^login/?$ login.php [L,QSA]
+    RewriteRule ^contact/?$ contact.php [L,QSA]
+    
+    # Clean URL for tags
+    RewriteRule ^tag/([a-zA-Z0-9-]+)$ tag.php?slug=$1 [L,QSA]
+    
+    # Clean URL for custom pages
+    RewriteRule ^page/([a-zA-Z0-9-]+)$ page.php?slug=$1 [L,QSA]
+    
+    # Clean URL for categories (single level)
+    RewriteRule ^category/([a-zA-Z0-9-]+)$ category.php?slug=$1 [L,QSA]
+    
+    # Clean URL for subcategories (two levels)
+    RewriteRule ^([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)$ subcategory.php?parent_slug=$1&slug=$2 [L,QSA]
+    
+    # Clean URL for search (both formats)
+    RewriteRule ^search/?$ search.php [L,QSA]
+    RewriteRule ^search/([^/]+)$ search.php?q=$1 [L,QSA]
+    
+    # Sitemap
+    RewriteRule ^sitemap\.xml$ sitemap.xml.php [L]
+    
+    # Block access to sensitive files
+    RewriteRule ^(config|includes|database)/.*$ - [F,L]
+    
+    # Remove trailing slash
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [R=301,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy (adjust as needed)
+    # Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net;"
+    
+    # Remove Server Signature
+    Header always unset Server
+    Header always unset X-Powered-By
+</IfModule>
+
+# PHP Security Settings
+<IfModule mod_php7.c>
+    php_flag display_errors On
+    php_flag log_errors On
+    php_value error_log C:/xampp/htdocs/error.log
+    # Suppress deprecation warnings (22527 = E_ALL & ~E_DEPRECATED & ~E_STRICT)
+    php_value error_reporting 22527
+    php_value upload_max_filesize 50M
+    php_value post_max_size 50M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# For PHP 8.x
+<IfModule mod_php.c>
+    php_flag display_errors On
+    php_flag log_errors On
+    php_value error_log C:/xampp/htdocs/error.log
+    # Suppress deprecation warnings (22527 = E_ALL & ~E_DEPRECATED & ~E_STRICT)
+    php_value error_reporting 22527
+    php_value upload_max_filesize 50M
+    php_value post_max_size 50M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# Disable Directory Browsing
+Options -Indexes
+
+# Default Document
+DirectoryIndex index.php index.html
+
+# Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql|conf)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block access to backup files
+<FilesMatch "(\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|swp)|~)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Enable GZIP Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom_xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Browser Caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    
+    # Others
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
+
+# ETags
+<IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
+
+# Character Encoding
+AddDefaultCharset UTF-8
+
+# Error Pages (create custom error pages)
+ErrorDocument 400 /404.php
+ErrorDocument 401 /404.php
+ErrorDocument 403 /404.php
+ErrorDocument 404 /404.php
+ErrorDocument 500 /404.php
+
+# Limit Request Methods
+<LimitExcept GET POST HEAD>
+    Order allow,deny
+    Deny from all
+</LimitExcept>
+
+# Prevent Hotlinking (uncomment to enable)
+# RewriteEngine on
+# RewriteCond %{HTTP_REFERER} !^$
+# RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?yourdomain.com [NC]
+# RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [NC,F,L]
